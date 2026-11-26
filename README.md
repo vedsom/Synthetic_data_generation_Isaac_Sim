@@ -9,10 +9,10 @@ Type `box`, `pallet`, `barrel`, `crate`, `bottle`, `forklift` or `all` and every
 
 | | |
 |---|---|
-| ![](docs/media/img_2.png) | ![](docs/media/img_3.png) |
-| ![](docs/media/img_4.png) | ![](docs/media/img_5.png) |
-| ![](docs/media/img_6.png) | ![](docs/media/img_7.png) |
-| ![](docs/media/img_8.png) |  |
+| ![](docs/media/img_1.png) | ![](docs/media/img_2.png) |
+| ![](docs/media/img_3.png) | ![](docs/media/img_4.png) |
+| ![](docs/media/img_5.png) | ![](docs/media/img_6.png) |
+| ![](docs/media/img_7.png) | ![](docs/media/img_8.png) |
 
 ## What this is
 An end-to-end **synthetic data generation (SDG)** pipeline built in NVIDIA Isaac Sim 6.0:
