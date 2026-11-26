@@ -1,0 +1,33 @@
+isaacsim.replicator.agent:
+  version: 1.6.0
+  seed: 3533396751
+  simulation_duration: 10.0
+  environment:
+    base_stage_asset_path: /media/omv-200/New Volume2/Abhishek/synthetic_data_gen/warehouse.usd
+  replicator:
+    writers:
+      IRABasicWriter:
+        output_dir: /media/omv-200/New Volume2/Abhishek/synthetic_data_gen/IRA_Output_2
+        semantic_filter_predicate: class:box|pallet|barel|crate|bottle|forklift;id:*
+        rgb: true
+        bounding_box_2d_tight: true
+        semantic_segmentation: true
+        instance_segmentation: true
+        distance_to_camera: true
+        bounding_box_3d: true
+        camera_params: true
+        video_rendering_annotator_list:
+        - instance_segmentation_fast
+        cosmos_video_annotators:
+        - edges
+        - shaded_seg
+        - depth
+        - segmentation
+        start_frame: 0
+        end_frame: 8
+        sensor_prim_list:
+        - /World/cameras/Camera_1
+        - /World/cameras/Camera_2
+        - /World/cameras/Camera_3
+        - /World/cameras/Camera_4
+        - /World/cameras/Camera_5

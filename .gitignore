@@ -1,0 +1,15 @@
+# datasets & renders (too big for git - keep locally)
+IRA_Output*/
+*_yolo/
+runs/
+*.npy
+*.mp4
+# USD scenes / NVIDIA assets (don't redistribute)
+*.usd
+*.usda
+*.usdc
+# python
+__pycache__/
+*.pyc
+yolo_env/
+*.pt

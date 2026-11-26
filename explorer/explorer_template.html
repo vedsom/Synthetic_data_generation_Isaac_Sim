@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>__TITLE__</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b0e12; --panel:#12161c; --panel2:#171c24; --line:#232a34;
+    --text:#e8ecf1; --muted:#8a95a5; --accent:#9be15d; --warn:#ffb347;
+    --sans:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans)}
+  body{background:
+    radial-gradient(1200px 500px at 10% -10%, rgba(155,225,93,.08), transparent 60%),
+    radial-gradient(900px 400px at 110% 0%, rgba(63,208,255,.06), transparent 60%), var(--bg)}
+  .wrap{max-width:1400px;margin:0 auto;padding:28px 28px 60px}
+
+  header{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-bottom:22px}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:var(--accent);text-transform:uppercase}
+  h1{margin:6px 0 4px;font-size:34px;font-weight:700;letter-spacing:-.02em}
+  .sub{color:var(--muted);font-size:15px;max-width:760px}
+  .by{font-family:var(--mono);font-size:12px;color:var(--muted);text-align:right}
+  .by b{color:var(--text);font-weight:600}
+
+  .search{display:flex;gap:12px;align-items:center;background:var(--panel);border:1px solid var(--line);
+    border-radius:14px;padding:10px 12px 10px 18px;margin-bottom:12px}
+  .search label{font-family:var(--mono);font-size:13px;color:var(--accent);white-space:nowrap}
+  #q{flex:1;background:transparent;border:0;outline:0;color:var(--text);font:500 20px var(--sans);padding:8px 0}
+  #q::placeholder{color:#566173}
+  .btn{background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:10px;
+    padding:9px 14px;font:600 13px var(--sans);cursor:pointer;white-space:nowrap}
+  .btn:hover{border-color:#3a4554}
+  .btn.on{background:var(--accent);color:#0b0e12;border-color:var(--accent)}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+  .chip{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);
+    background:var(--panel);font:500 13px var(--sans);cursor:pointer;user-select:none}
+  .chip i{width:9px;height:9px;border-radius:2px;display:inline-block}
+  .chip span{font-family:var(--mono);color:var(--muted);font-size:12px}
+  .chip.active{border-color:currentColor}
+  .msg{font-size:13px;color:var(--warn);min-height:18px;margin:-8px 0 10px}
+
+  .grid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px}
+  @media (max-width:1000px){.grid{grid-template-columns:1fr}}
+  .stage{position:relative;background:#000;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  canvas{display:block;width:100%;height:auto;cursor:crosshair}
+  .badge{position:absolute;left:14px;top:12px;font:600 12px var(--mono);background:rgba(11,14,18,.75);
+    border:1px solid var(--line);padding:5px 9px;border-radius:8px;backdrop-filter:blur(4px)}
+  #tip{position:absolute;pointer-events:none;background:rgba(11,14,18,.92);border:1px solid var(--line);
+    border-radius:8px;padding:8px 10px;font:12px var(--mono);display:none;max-width:340px;line-height:1.5}
+
+  aside{display:flex;flex-direction:column;gap:12px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+  .card h3{margin:0 0 10px;font:600 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .seg{display:flex;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:3px}
+  .seg button{flex:1;background:transparent;border:0;color:var(--muted);font:600 12px var(--sans);padding:8px 6px;border-radius:8px;cursor:pointer}
+  .seg button.on{background:var(--text);color:#0b0e12}
+  .seg button:disabled{opacity:.35;cursor:not-allowed}
+  .big{font:700 44px var(--sans);letter-spacing:-.03em;line-height:1}
+  .big small{font:500 15px var(--sans);color:var(--muted);letter-spacing:0;margin-left:6px}
+  .row{display:flex;align-items:center;gap:8px;font-size:13px;margin:7px 0}
+  .row .n{font-family:var(--mono);width:38px;text-align:right;color:var(--muted)}
+  .bar{flex:1;height:6px;background:var(--panel2);border-radius:4px;overflow:hidden}
+  .bar>div{height:100%;border-radius:4px;transition:width .35s ease}
+  input[type=range]{width:100%;accent-color:var(--accent)}
+  .hint{font-size:12px;color:var(--muted);line-height:1.5}
+
+  .thumbs{display:flex;gap:10px;overflow-x:auto;padding:14px 2px 4px}
+  .thumb{flex:0 0 auto;width:170px;border:1px solid var(--line);border-radius:10px;overflow:hidden;cursor:pointer;background:var(--panel)}
+  .thumb img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;opacity:.75}
+  .thumb div{font:12px var(--mono);padding:6px 8px;color:var(--muted)}
+  .thumb.on{border-color:var(--accent)} .thumb.on img{opacity:1} .thumb.on div{color:var(--text)}
+
+  .how{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:34px}
+  @media (max-width:1000px){.how{grid-template-columns:1fr 1fr}}
+  .step{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
+  .step b{display:block;font:600 11px var(--mono);color:var(--accent);margin-bottom:6px;letter-spacing:.1em}
+  .step p{margin:0;font-size:13px;color:var(--muted);line-height:1.5}
+  .step p strong{color:var(--text);font-weight:600}
+  .stats{display:flex;gap:28px;flex-wrap:wrap;margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}
+  .stat .v{font:700 26px var(--sans)} .stat .k{font:12px var(--mono);color:var(--muted)}
+  h2{font-size:18px;margin:34px 0 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <div class="tag">Isaac Sim 6.0 · Replicator · Synthetic data</div>
+      <h1 id="title"></h1>
+      <div class="sub" id="subtitle"></div>
+    </div>
+    <div class="by" id="by"></div>
+  </header>
+
+  <div class="search">
+    <label for="q">FIND &gt;</label>
+    <input id="q" autocomplete="off" spellcheck="false" placeholder="Type an object… box, pallet, barrel, bottle, crate, forklift, all">
+    <button class="btn" id="demo">▶ Demo</button>
+  </div>
+  <div class="chips" id="chips"></div>
+  <div class="msg" id="msg"></div>
+
+  <div class="grid">
+    <div>
+      <div class="stage" id="stage">
+        <canvas id="cv"></canvas>
+        <div class="badge" id="badge"></div>
+        <div id="tip"></div>
+      </div>
+      <div class="thumbs" id="thumbs"></div>
+    </div>
+    <aside>
+      <div class="card">
+        <h3>View</h3>
+        <div class="seg" id="views">
+          <button data-v="rgb" class="on">Photo</button>
+          <button data-v="semantic">Semantic</button>
+          <button data-v="instance">Instance</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Found in this view</h3>
+        <div class="big" id="found">0<small>objects</small></div>
+        <div id="bars" style="margin-top:12px"></div>
+      </div>
+      <div class="card">
+        <h3>Visibility filter</h3>
+        <input type="range" id="occ" min="0" max="95" value="80">
+        <div class="hint">Show objects up to <b id="occv">80</b>% hidden behind others.<br>Replicator computes this <em>occlusion ratio</em> for every object.</div>
+      </div>
+      <div class="card">
+        <h3>Hover an object</h3>
+        <div class="hint" id="info">Move the mouse over a highlighted box to see its class, USD prim path and how much of it is visible.</div>
+      </div>
+    </aside>
+  </div>
+
+  <h2>How this dataset was made</h2>
+  <div class="how">
+    <div class="step"><b>01 · SCENE</b><p>A <strong>USD warehouse</strong> in Isaac Sim with thousands of boxes, pallets, barrels, crates and bottles.</p></div>
+    <div class="step"><b>02 · LABELS</b><p>Every object carries a <strong>semantic class label</strong> on its USD prim. No manual drawing.</p></div>
+    <div class="step"><b>03 · CAMERAS</b><p>Virtual cameras placed along the aisles, like handheld scanners or CCTV.</p></div>
+    <div class="step"><b>04 · REPLICATOR</b><p>Renders <strong>RGB, segmentation, depth, 2D/3D boxes and occlusion</strong> for every frame, pixel-perfect.</p></div>
+    <div class="step"><b>05 · USE IT</b><p>Ready for training detectors and segmenters, or for testing perception before touching real hardware.</p></div>
+  </div>
+  <div class="stats" id="stats"></div>
+</div>
+
+<script>
+const DATA = __DATA__;
+const $ = s => document.querySelector(s);
+const cv = $("#cv"), ctx = cv.getContext("2d");
+const SYN = {
+  box:"box",boxes:"box",carton:"box",cartons:"box",cardboard:"box",package:"box",packages:"box",parcel:"box",
+  pallet:"pallet",pallets:"pallet",palette:"pallet",skid:"pallet",
+  barrel:"barel",barrels:"barel",barel:"barel",drum:"barel",drums:"barel",jar:"barel",container:"barel",
+  crate:"crate",crates:"crate",bin:"crate",bins:"crate",tote:"crate",totes:"crate",
+  bottle:"bottle",bottles:"bottle",jerrycan:"bottle",can:"bottle",cans:"bottle",
+  forklift:"forklift",forklifts:"forklift",lift:"forklift",truck:"forklift",
+};
+const NICE = {barel:"barrel"};
+const nice = c => NICE[c] || c;
+
+let cur = 0, view = "rgb", query = [], maxOcc = 0.8, revealT = 0, hover = null, demoTimer = null;
+const cache = {};
+
+function img(i, v){
+  const key = i + ":" + v;
+  if (!cache[key]){ const im = new Image(); im.onload = () => draw(); im.src = DATA.frames[i].views[v]; cache[key] = im; }
+  return cache[key];
+}
+
+function parse(text){
+  const t = text.toLowerCase().trim();
+  if (!t) return {hits:[], unknown:[]};
+  if (/^(all|\*|everything|any)$/.test(t)) return {hits:DATA.classes.slice(), unknown:[]};
+  const hits = new Set(), unknown = [];
+  for (const w of t.split(/[\s,;+&]+/).filter(x => x && x !== "and")){
+    const c = SYN[w] || (DATA.classes.includes(w) ? w : null);
+    if (c && DATA.classes.includes(c)) hits.add(c); else unknown.push(w);
+  }
+  return {hits:[...hits], unknown};
+}
+
+function selected(fr){
+  return fr.objects.filter(o => query.includes(o.c) && o.o <= maxOcc);
+}
+
+function draw(){
+  const fr = DATA.frames[cur];
+  const v = fr.views[view] ? view : "rgb";
+  const im = img(cur, v);
+  if (!im.complete || !im.naturalWidth) return;
+  if (cv.width !== fr.w) { cv.width = fr.w; cv.height = fr.h; }
+  ctx.drawImage(im, 0, 0, fr.w, fr.h);
+
+  const sel = selected(fr).sort((a, b) => a.x - b.x);
+  if (query.length){
+    ctx.fillStyle = "rgba(6,8,12,0.66)";
+    ctx.fillRect(0, 0, fr.w, fr.h);
+    const t = Math.min(1, (performance.now() - revealT) / 700);
+    const n = Math.ceil(sel.length * t);
+    for (let k = 0; k < n; k++){
+      const o = sel[k];
+      ctx.drawImage(im, o.x, o.y, o.w, o.h, o.x, o.y, o.w, o.h);
+    }
+    for (let k = 0; k < n; k++){
+      const o = sel[k], col = DATA.colors[o.c];
+      const isHover = hover === o;
+      ctx.lineWidth = isHover ? 3 : 1.6;
+      ctx.strokeStyle = col;
+      ctx.strokeRect(o.x + .5, o.y + .5, o.w - 1, o.h - 1);
+      if (o.w > 34 && o.h > 14){
+        const label = nice(o.c);
+        ctx.font = "600 11px IBM Plex Mono, monospace";
+        const tw = ctx.measureText(label).width + 8;
+        ctx.fillStyle = col;
+        ctx.fillRect(o.x, Math.max(0, o.y - 15), tw, 15);
+        ctx.fillStyle = "#0b0e12";
+        ctx.fillText(label, o.x + 4, Math.max(11, o.y - 4));
+      }
+    }
+    if (t < 1) requestAnimationFrame(draw);
+  }
+  updatePanel(fr, sel);
+}
+
+function updatePanel(fr, sel){
+  const counts = {};
+  for (const o of fr.objects) if (o.o <= maxOcc) counts[o.c] = (counts[o.c] || 0) + 1;
+  const max = Math.max(1, ...Object.values(counts));
+  $("#found").innerHTML = sel.length + "<small>" + (!query.length ? "type above" : query.length === DATA.classes.length ? "all classes" : query.length > 3 ? query.length + " classes" : query.map(nice).join(" + ")) + "</small>";
+  $("#bars").innerHTML = DATA.classes.map(c => {
+    const n = counts[c] || 0, on = query.includes(c);
+    return `<div class="row" style="opacity:${!query.length || on ? 1 : .4}"><span style="width:62px">${nice(c)}</span>
+      <div class="bar"><div style="width:${100 * n / max}%;background:${DATA.colors[c]}"></div></div><span class="n">${n}</span></div>`;
+  }).join("");
+  $("#badge").textContent = `${fr.cam} · frame ${fr.fid} · ${fr.src[0]}×${fr.src[1]}`;
+  document.querySelectorAll("#views button").forEach(b => b.disabled = !fr.views[b.dataset.v]);
+}
+
+function setQuery(text, fromChip){
+  const {hits, unknown} = parse(text);
+  query = hits; revealT = performance.now(); hover = null;
+  $("#msg").textContent = unknown.length
+    ? `No label for "${unknown.join(", ")}". Labelled classes: ${DATA.classes.map(nice).join(", ")}, or "all".` : "";
+  document.querySelectorAll(".chip").forEach(ch => {
+    const on = query.includes(ch.dataset.c);
+    ch.classList.toggle("active", on);
+    ch.style.color = on ? DATA.colors[ch.dataset.c] : "";
+  });
+  draw();
+}
+
+function setFrame(i){
+  cur = (i + DATA.frames.length) % DATA.frames.length;
+  revealT = performance.now(); hover = null;
+  document.querySelectorAll(".thumb").forEach((t, k) => t.classList.toggle("on", k === cur));
+  draw();
+}
+
+/* ---------- build UI ---------- */
+$("#title").textContent = DATA.title;
+$("#subtitle").textContent = DATA.subtitle;
+$("#by").innerHTML = DATA.author ? `built by <b>${DATA.author}</b>` : "";
+
+$("#chips").innerHTML = DATA.classes.map(c =>
+  `<div class="chip" data-c="${c}"><i style="background:${DATA.colors[c]}"></i>${nice(c)}<span>${DATA.totals[c]}</span></div>`
+).join("") + `<div class="chip" data-c="__all">all<span>${Object.values(DATA.totals).reduce((a, b) => a + b, 0)}</span></div>`;
+document.querySelectorAll(".chip").forEach(ch => ch.onclick = () => {
+  stopDemo();
+  const c = ch.dataset.c;
+  if (c === "__all") { $("#q").value = "all"; }
+  else {
+    const set = new Set(query);
+    set.has(c) ? set.delete(c) : set.add(c);
+    $("#q").value = [...set].map(nice).join(", ");
+  }
+  setQuery($("#q").value, true);
+});
+
+$("#thumbs").innerHTML = DATA.frames.map((f, i) =>
+  `<div class="thumb" data-i="${i}"><img src="${f.views.rgb}" alt=""><div>${f.cam} · ${f.fid}</div></div>`).join("");
+document.querySelectorAll(".thumb").forEach(t => t.onclick = () => { stopDemo(); setFrame(+t.dataset.i); });
+
+document.querySelectorAll("#views button").forEach(b => b.onclick = () => {
+  view = b.dataset.v;
+  document.querySelectorAll("#views button").forEach(x => x.classList.toggle("on", x === b));
+  draw();
+});
+
+$("#q").addEventListener("input", e => { stopDemo(); setQuery(e.target.value); });
+$("#occ").addEventListener("input", e => { maxOcc = e.target.value / 100; $("#occv").textContent = e.target.value; draw(); });
+document.addEventListener("keydown", e => {
+  if (e.target === $("#q")) return;
+  if (e.key === "ArrowRight") setFrame(cur + 1);
+  if (e.key === "ArrowLeft") setFrame(cur - 1);
+});
+
+/* hover */
+cv.addEventListener("mousemove", e => {
+  const r = cv.getBoundingClientRect(), fr = DATA.frames[cur];
+  const x = (e.clientX - r.left) * fr.w / r.width, y = (e.clientY - r.top) * fr.h / r.height;
+  const hits = selected(fr).filter(o => x >= o.x && x <= o.x + o.w && y >= o.y && y <= o.y + o.h)
+    .sort((a, b) => a.w * a.h - b.w * b.h);
+  const o = hits[0] || null;
+  const tip = $("#tip");
+  if (o){
+    const html = `<b style="color:${DATA.colors[o.c]}">${nice(o.c)}</b><br>${o.p}<br>visible: ${Math.round((1 - o.o) * 100)}%`;
+    tip.innerHTML = html; $("#info").innerHTML = html;
+    tip.style.display = "block";
+    tip.style.left = Math.min(e.clientX - r.left + 14, r.width - 300) + "px";
+    tip.style.top = (e.clientY - r.top + 14) + "px";
+  } else tip.style.display = "none";
+  if (o !== hover){ hover = o; draw(); }
+});
+cv.addEventListener("mouseleave", () => { $("#tip").style.display = "none"; hover = null; draw(); });
+
+/* demo mode: cycles queries and cameras - handy for a screen recording */
+const DEMO = ["box", "pallet", "barrel", "crate", "bottle", "forklift", "all"];
+function stopDemo(){ if (demoTimer){ clearInterval(demoTimer); demoTimer = null; $("#demo").classList.remove("on"); $("#demo").textContent = "▶ Demo"; } }
+$("#demo").onclick = () => {
+  if (demoTimer) return stopDemo();
+  let k = 0;
+  $("#demo").classList.add("on"); $("#demo").textContent = "■ Stop";
+  const stepDemo = () => {
+    const words = DEMO.filter(w => w === "all" || parse(w).hits.length);
+    const w = words[k % words.length];
+    if (k > 0 && k % words.length === 0) setFrame(cur + 1);
+    typeOut(w); k++;
+  };
+  stepDemo(); demoTimer = setInterval(stepDemo, 2600);
+};
+function typeOut(word){
+  const q = $("#q"); q.value = ""; let i = 0;
+  const t = setInterval(() => { q.value = word.slice(0, ++i); if (i >= word.length){ clearInterval(t); setQuery(word); } }, 70);
+}
+
+/* footer stats */
+const totalObjs = Object.values(DATA.totals).reduce((a, b) => a + b, 0);
+$("#stats").innerHTML = [
+  [DATA.frames.length, "frames shown"], [DATA.cameras, "virtual cameras"],
+  [totalObjs.toLocaleString(), "labelled objects"], [DATA.classes.length, "classes"], ["0 min", "manual labelling"],
+].map(([v, k]) => `<div class="stat"><div class="v">${v}</div><div class="k">${k}</div></div>`).join("");
+
+setFrame(0);
+setQuery("");
+</script>
+</body>
+</html>
